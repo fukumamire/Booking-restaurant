@@ -26,13 +26,8 @@
     </div>
     <div class="form-group">
       <label for="genres" class="form-label">ジャンル</label>
-      <select id="genres" name="genre_ids[]" class="form-select" multiple required>
-        @foreach($genres as $genre)
-        <option value="{{ $genre->id }}" {{ in_array($genre->id, $shop->genres->pluck('id')->toArray()) ? 'selected' : '' }}>
-          {{ $genre->name }}
-        </option>
-        @endforeach
-      </select>
+      <input type="text" id="genres" name="genres" class="form-input" value="{{ implode(', ', $shop->genres->pluck('name')->toArray()) }}" required>
+      <small class="form-text text-muted">複数のジャンルがある場合はカンマ(,)で区切って入力してください。</small>
     </div>
     <div class="form-group">
       <label for="outline" class="form-label">概要</label>

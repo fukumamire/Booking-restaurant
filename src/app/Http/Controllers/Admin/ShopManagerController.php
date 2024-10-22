@@ -151,22 +151,23 @@ class ShopManagerController extends Controller
     return view('admin.shop-manager.edit-shop', compact('shop', 'areas', 'genres'));
   }
 
-
   public function updateShop(Request $request, Shop $shop)
   {
     $validatedData = $request->validate([
       'name' => 'required|string|max:255',
       'area_ids' => 'required|array',
-      'genre_ids' => 'required|array',
+      'genres' => 'required|string',
       'outline' => 'required|string',
       'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
     ]);
 
-    // 既存のジャンルの shop_id を更新し、新しいジャンルは追加しない
-    foreach ($request->input('genre_ids') as $genreId) {
-      $existingGenre = Genre::find($genreId);
-      if ($existingGenre && $shop->genres()->where('id', $genreId)->exists()) {
-        $existingGenre->update(['shop_id' => $shop->id]);
+    // 既存のジャンルの shop_id を更新し、新しいジャンルは追加
+    $genreNames = explode(',', $request->input('genres'));
+    $shop->genres()->delete(); // 既存のジャンルを全て削除
+    foreach ($genreNames as $genreName) {
+      $genreName = trim($genreName);
+      if (!empty($genreName)) {
+        Genre::firstOrCreate(['name' => $genreName, 'shop_id' => $shop->id]);
       }
     }
 
@@ -196,35 +197,7 @@ class ShopManagerController extends Controller
     return redirect()->route('shop-manager.dashboard')->with('success', '店舗情報を更新しました。');
   }
 
-  //店舗削除
-  public function destroy(Shop $shop)
-  {
-    if (!auth()->check()) {
-      return redirect()->route('shop-manager.login');
-    }
 
-    $user = auth()->user();
-
-    if (!$user instanceof User || !$user->hasRole('shop-manager')) {
-      abort(403, 'Invalid shop manager');
-    }
-
-    if ($shop->user_id !== $user->id) {
-      abort(403, 'You do not have permission to delete this shop');
-    }
-
-    // 関連データの論理削除
-    $shop->areas()->detach(); // 多対多のリレーション
-    $shop->genres()->delete(); // 一対多のリレーション
-    $shop->images()->delete(); // 一対多のリレーション
-    $shop->bookings()->delete(); // 一対多のリレーション
-
-    // 店舗の論理削除
-    $shop->delete();
-
-    return redirect()->route('shop-manager.shops.index')->with('success', '店舗が削除されました。');
-  }
-  
   public function restore($id)
   {
     $shop = Shop::withTrashed()->findOrFail($id);
