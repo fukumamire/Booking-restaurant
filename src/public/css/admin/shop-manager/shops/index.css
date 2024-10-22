@@ -49,6 +49,15 @@ h1 {
   font-size: 16px;
 }
 
+.btn-edit{
+  background-color:#0b86c8;
+}
+
+.btn-edit:hover {
+  background-color: #18068edd; 
+}
+
+
 .btn-danger {
   background-color: #dc3545; /* 赤 */
 }

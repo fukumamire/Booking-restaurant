@@ -43,6 +43,8 @@
       </td>
       <td>
         @if(!$shop->trashed())
+        <a href="{{ route('shop-manager.shops.edit', $shop->id) }}" class="btn btn-edit">Edit</a>
+
         <a href="{{ route('shop-manager.shops.destroy', $shop->id) }}" onclick="event.preventDefault();
                             document.getElementById('delete-form-{{ $shop->id }}').submit();" class="btn btn-danger">
           Delete
