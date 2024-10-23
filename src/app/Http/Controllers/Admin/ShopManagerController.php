@@ -171,10 +171,13 @@ class ShopManagerController extends Controller
       }
     }
 
+    // 古い画像を削除
+    $shop->images()->delete(); // 既存の画像を全て削除
+
     // 画像アップロード処理
     if ($request->hasFile('images')) {
       foreach ($request->file('images') as $image) {
-        $imageName = time() . '_' . $image->getClientOriginalName();
+        $imageName = uniqid() . '_' . $image->getClientOriginalName();
 
         // URLエンコードしたファイル名を生成
         $encodedImageName = urlencode($imageName);
@@ -182,7 +185,8 @@ class ShopManagerController extends Controller
         $imagePath = Storage::putFileAs('public/shop_images', $image, $encodedImageName);
 
         // URLの生成（'storage/shop_images/...' となる）
-        $imageUrl = asset('storage/shop_images/' . $encodedImageName);
+        $imageUrl = Storage::url($imagePath); // URL生成方法を修正
+        // $imageUrl = asset('storage/shop_images/' . $encodedImageName);
 
         ShopImage::create([
           'shop_image_url' => $imageUrl,
@@ -191,17 +195,6 @@ class ShopManagerController extends Controller
       }
     }
 
-    // if ($request->hasFile('images')) {
-    //   foreach ($request->file('images') as $image) {
-    //     $imageName = time() . '_' . $image->getClientOriginalName();
-    //     $imagePath = Storage::putFileAs('public/shop_images', $image, $imageName);
-
-    //     ShopImage::create([
-    //       'shop_image_url' => $imageName,
-    //       'shop_id' => $shop->id,
-    //     ]);
-    //   }
-    // }
 
     // 店舗の情報を更新
     $shop->update([
