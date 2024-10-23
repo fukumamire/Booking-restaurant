@@ -186,7 +186,6 @@ class ShopManagerController extends Controller
 
         // URLの生成（'storage/shop_images/...' となる）
         $imageUrl = Storage::url($imagePath); // URL生成方法を修正
-        // $imageUrl = asset('storage/shop_images/' . $encodedImageName);
 
         ShopImage::create([
           'shop_image_url' => $imageUrl,
