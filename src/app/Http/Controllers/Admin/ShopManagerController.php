@@ -175,14 +175,33 @@ class ShopManagerController extends Controller
     if ($request->hasFile('images')) {
       foreach ($request->file('images') as $image) {
         $imageName = time() . '_' . $image->getClientOriginalName();
-        $imagePath = Storage::putFileAs('public/shop_images', $image, $imageName);
+
+        // URLエンコードしたファイル名を生成
+        $encodedImageName = urlencode($imageName);
+
+        $imagePath = Storage::putFileAs('public/shop_images', $image, $encodedImageName);
+
+        // URLの生成（'storage/shop_images/...' となる）
+        $imageUrl = asset('storage/shop_images/' . $encodedImageName);
 
         ShopImage::create([
-          'shop_image_url' => $imageName,
+          'shop_image_url' => $imageUrl,
           'shop_id' => $shop->id,
         ]);
       }
     }
+
+    // if ($request->hasFile('images')) {
+    //   foreach ($request->file('images') as $image) {
+    //     $imageName = time() . '_' . $image->getClientOriginalName();
+    //     $imagePath = Storage::putFileAs('public/shop_images', $image, $imageName);
+
+    //     ShopImage::create([
+    //       'shop_image_url' => $imageName,
+    //       'shop_id' => $shop->id,
+    //     ]);
+    //   }
+    // }
 
     // 店舗の情報を更新
     $shop->update([
