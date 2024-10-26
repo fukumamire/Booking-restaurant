@@ -51,6 +51,7 @@
 <div class="shop__wrap">
   @foreach ($shops as $shop)
   <div class="shop__content">
+  @if ($shop) {{-- shopオブジェクトが存在するか確認 --}}
     @foreach($shop->images as $image)
     <img src="{{ $image->shop_image_url}}" alt="{{ $shop->name }}" class="shop__image">
     @endforeach
@@ -71,6 +72,9 @@
         </div>
       </div>
     </div>
+  @else	</div>
+  <p>ショップ情報が見つかりません。</p> {{-- shopが存在しない場合のメッセージ --}}	
+  @endif
   </div>
   @endforeach
 </div>

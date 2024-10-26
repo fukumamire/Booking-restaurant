@@ -146,6 +146,11 @@ class ShopManagerController extends Controller
 
   public function editShop(Shop $shop)
   {
+    // shopオブジェクトが正しく取得されているか、またそのオブジェクトがnullでないことを確認
+    if (!$shop) {
+      return redirect()->route('shop-manager.shops.index')->with('error', 'ショップ情報が見つかりません。');
+    }
+
     $areas = Area::all();
     $genres = Genre::select('id', 'name')->distinct()->get(); // 重複を排除
     return view('admin.shop-manager.edit-shop', compact('shop', 'areas', 'genres'));
@@ -153,6 +158,10 @@ class ShopManagerController extends Controller
 
   public function updateShop(Request $request, Shop $shop)
   {
+    if (!$shop) {
+      return redirect()->route('shop-manager.shops.index')->with('error', 'ショップ情報が見つかりません。');
+    }
+
     $validatedData = $request->validate([
       'name' => 'required|string|max:255',
       'area_ids' => 'required|array',
@@ -177,20 +186,33 @@ class ShopManagerController extends Controller
     // 画像アップロード処理
     if ($request->hasFile('images')) {
       foreach ($request->file('images') as $image) {
-        $imageName = uniqid() . '_' . $image->getClientOriginalName();
+        // 画像が存在するか確認
+        if ($image->isValid()) {
 
-        // URLエンコードしたファイル名を生成
-        $encodedImageName = urlencode($imageName);
+          // アップロードする画像の名前をログに記録
+          Log::info('Uploading image: ' . $image->getClientOriginalName());
 
-        $imagePath = Storage::putFileAs('public/shop_images', $image, $encodedImageName);
+          // 画像名を生成
+          $imageName = uniqid() . '_' . $image->getClientOriginalName();
 
-        // URLの生成（'storage/shop_images/...' となる）
-        $imageUrl = Storage::url($imagePath); // URL生成方法を修正
+          // URLエンコードしたファイル名を生成
+          $encodedImageName = urlencode($imageName);
 
-        ShopImage::create([
-          'shop_image_url' => $imageUrl,
-          'shop_id' => $shop->id,
-        ]);
+          // 画像を 'public/shop_images' に保存
+          $imagePath = Storage::putFileAs('public/shop_images', $image, $encodedImageName);
+
+          // URLの生成（'storage/shop_images/...' となる）
+          $imageUrl = Storage::url($imagePath);
+
+          // ShopImageモデルに保存
+          ShopImage::create([
+            'shop_image_url' => $imageUrl,
+            'shop_id' => $shop->id,
+          ]);
+        } else {
+          // 画像が無効な場合のエラーログ
+          Log::error('Invalid file: ' . $image->getClientOriginalName());
+        }
       }
     }
 
