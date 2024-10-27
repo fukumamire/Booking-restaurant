@@ -188,21 +188,25 @@ class ShopManagerController extends Controller
       foreach ($request->file('images') as $image) {
         // 画像が存在するか確認
         if ($image->isValid()) {
-
           // アップロードする画像の名前をログに記録
           Log::info('Uploading image: ' . $image->getClientOriginalName());
 
-          // 画像名を生成
-          $imageName = uniqid() . '_' . $image->getClientOriginalName();
+          // 元のファイル名と拡張子を取得
+          $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+          $extension = $image->getClientOriginalExtension();
 
           // URLエンコードしたファイル名を生成
-          $encodedImageName = urlencode($imageName);
+          $encodedName = urlencode($originalName);
+          $imageName = uniqid() . '_' . $encodedName . '.' . $extension;
 
           // 画像を 'public/shop_images' に保存
-          $imagePath = Storage::putFileAs('public/shop_images', $image, $encodedImageName);
+          $imagePath = $image->storeAs('public/shop_images', $imageName);
 
           // URLの生成（'storage/shop_images/...' となる）
           $imageUrl = Storage::url($imagePath);
+
+          // '/public/'を削除してURLを修正
+          $imageUrl = str_replace('/public/', '/', $imageUrl);
 
           // ShopImageモデルに保存
           ShopImage::create([
