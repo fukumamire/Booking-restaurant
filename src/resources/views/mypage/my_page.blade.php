@@ -62,6 +62,21 @@
           @endif
         </div>
       </div>
+      {{-- 試しの決済画面 --}}
+      <form action="{{route('stripe.charge')}}" method="POST">
+        @csrf
+        <script
+          src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+          data-key="{{ config('services.stripe.pb_key') }}"
+          data-amount="100"
+          data-name="お支払い画面"
+          data-label="payment"
+          data-description="現在はデモ画面です"
+          data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+          data-locale="auto"
+          data-currency="JPY">
+        </script>
+      </form>
     </div>{{-- partials/bookings.blade.php --}}
 
     <div class="right__side">
