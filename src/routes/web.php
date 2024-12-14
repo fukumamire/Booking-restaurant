@@ -26,7 +26,7 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-
+use App\Http\Controllers\StripeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -250,4 +250,8 @@ Route::group(['prefix' => 'shop-manager'], function () {
     //削除した店舗の復元
     Route::post('/shops/{shop}/restore', [ShopManagerController::class, 'restore'])->name('shop-manager.shops.restore');
   });
+
+  // 決済機能
+  Route::post('/charge', [StripeController::class, 'charge'])->name('stripe.charge');
+  
 });
