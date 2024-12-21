@@ -18,9 +18,9 @@
   <div class="header__sort">
     <label class="select-box__label sort__label">
       <select name="sort" class="select-box__item sort__item">
-        <option value="random" {{ request('sort') == 'random' ? 'selected' : '' }}>ランダム</option>
-        <option value="high_rating" {{ request('sort') == 'high_rating' ? 'selected' : '' }}>評価が高い順</option>
-        <option value="low_rating" {{ request('sort') == 'low_rating' ? 'selected' : '' }}>評価が低い順</option>
+        <option value="random" {{ $sort == 'random' ? 'selected' : '' }}>ランダム</option>
+        <option value="high_rating" {{ $sort == 'high_rating' ? 'selected' : '' }}>評価が高い順</option>
+        <option value="low_rating" {{ $sort == 'low_rating' ? 'selected' : '' }}>評価が低い順</option>
       </select>
     </label>
   </div>
@@ -87,8 +87,9 @@
 </div>
 
 @if($shops->count())
-{{ $shops->links() }} <!-- ページネーションリンク -->
+    {{ $shops->appends(['sort' => $sort])->links() }} <!-- ページネーションリンク -->
 @endif
+
 </div>
 @endsection
 

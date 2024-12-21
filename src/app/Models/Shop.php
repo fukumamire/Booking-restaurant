@@ -64,6 +64,21 @@ class Shop extends Model
     $this->update(['avg_rating' => $avgRating]);
     Log::info("Updated avg_rating for shop {$this->id} to {$avgRating}");
   }
+  // Reviewモデルとの関係を定義
+  public function reviews()
+  {
+    return $this->hasMany(Review::class);
+  }
+
+  // Reviewモデルの削除を処理するメソッド
+  public function destroyReview(Review $review)
+  {
+    if ($review->delete()) {
+      $this->updateAvgRating();
+      return true;
+    }
+    return false;
+  }
 
   // 予約が関連する店舗
   public function bookings()
@@ -104,9 +119,5 @@ class Shop extends Model
     }
   }
 
-  // Reviewモデルとの関係を定義
-  public function reviews()
-  {
-    return $this->hasMany(Review::class);
-  }
+  
 }

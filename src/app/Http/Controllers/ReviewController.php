@@ -100,8 +100,11 @@ class ReviewController extends Controller
       if ($review->image_url) {
         Storage::disk('public')->delete('public/reviews/' . $review->image_url);
       }
-      $review->delete();
-      return redirect()->route('shop.detail', ['shop' => $shopId])->with('success', '口コミが削除されました。');
+      
+      $shop = Shop::findOrFail($shopId);
+      if ($shop->destroyReview($review)) {
+        return redirect()->route('shop.detail', ['shop' => $shopId])->with('success', '口コミが削除されました。');
+      }
     }
 
     return redirect()->back()->with('error', '権限がありません。');

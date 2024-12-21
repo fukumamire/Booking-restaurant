@@ -69,7 +69,7 @@ class ShopController extends \App\Http\Controllers\Controller
     // 検索結果が空の場合はエラーメッセージを設定
     $message = $shops->isEmpty() ? 'お探しの飲食店はございません。再度検索してください。' : null;
 
-    return view('index', compact('shops', 'areas', 'genres', 'message'));
+    return view('index', compact('shops', 'areas', 'genres','message', 'sort'));
   }
 
   public function index()
@@ -86,8 +86,11 @@ class ShopController extends \App\Http\Controllers\Controller
 
     $areas = Area::all();
     $genres = Genre::select('name')->distinct()->get();
+  
+    // $sort変数を追加
+    $sort = 'random'; // デフォルトはランダムソート
 
-    return view('index', compact('shops', 'areas', 'genres'));
+    return view('index', compact('shops', 'areas','genres', 'sort'));
   }
 
 
