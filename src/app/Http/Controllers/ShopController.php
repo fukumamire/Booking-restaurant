@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ShopController extends \App\Http\Controllers\Controller
 {
+
   public function search(Request $request)
   {
     $query = Shop::query();
@@ -45,19 +46,19 @@ class ShopController extends \App\Http\Controllers\Controller
     $sort = $request->input('sort', 'random');
     switch ($sort) {
       case 'high_rating':
-        $query->orderBy('avg_rating', 'desc');
+        $query->orderByRaw('avg_rating = 0')
+          ->orderBy('avg_rating', 'desc');
         break;
       case 'low_rating':
-        $query->orderBy('avg_rating', 'asc');
+        $query->orderByRaw('avg_rating = 0')
+          ->orderBy('avg_rating', 'asc');
         break;
       case 'random':
       default:
-        $query = $query->inRandomOrder();
+        $query->orderByRaw('avg_rating = 0')
+          ->inRandomOrder();
         break;
     }
-    // avg_rating = 0 の店舗を一番下に配置
-    $query->orderByRaw('avg_rating = 0');
-
 
     // areas と genres のリレーションをロードして shops を取得
     $shops = $query->with(['areas', 'genres'])->paginate(10);
@@ -69,8 +70,9 @@ class ShopController extends \App\Http\Controllers\Controller
     // 検索結果が空の場合はエラーメッセージを設定
     $message = $shops->isEmpty() ? 'お探しの飲食店はございません。再度検索してください。' : null;
 
-    return view('index', compact('shops', 'areas', 'genres','message', 'sort'));
+    return view('index', compact('shops', 'areas', 'genres', 'message', 'sort'));
   }
+
 
   public function index()
   {
@@ -86,11 +88,11 @@ class ShopController extends \App\Http\Controllers\Controller
 
     $areas = Area::all();
     $genres = Genre::select('name')->distinct()->get();
-  
+
     // $sort変数を追加
     $sort = 'random'; // デフォルトはランダムソート
 
-    return view('index', compact('shops', 'areas','genres', 'sort'));
+    return view('index', compact('shops', 'areas', 'genres', 'sort'));
   }
 
 

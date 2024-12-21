@@ -118,6 +118,4 @@ class Shop extends Model
       $this->favorites()->create(['user_id' => $user->id]); // お気に入り登録
     }
   }
-
-  
 }
