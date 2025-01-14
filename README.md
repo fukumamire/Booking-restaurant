@@ -149,14 +149,16 @@ Laravel 8.x、PHP 7.4.9、docker、laravel-fortify、javascript、Laravel-permis
 - **created_at**: レコードの作成日時。Laravelによって自動的に管理
 - **updated_at**: レコードの最終更新日時。Laravelによって自動的に管理されます
 
-## reviewsテーブル
-| カラム名    | 型           | PRIMARY KEY | UNIQUE KEY | NOT NULL | FOREIGN KEY |
+## reviewsテーブル　
+
+<span style="color:red">`title` カラムを削除`image_url`カラムの追加</span>
+| カラム名    | 型           | PRIMARY KEY | UNIQUE KEY | NOT NULL（NUllを許可しない）| FOREIGN KEY |
 |-------------|--------------|-------------|------------|----------|-------------|
 | id          | bigint       | 〇           |            | 〇        |             |
 | shop_id     | bigint       |             |            | 〇        | 〇           |
 | user_id     | bigint       |             |            | 〇        | 〇           |
-| rating      | tiny int      |             |            | 〇        |             |
-| title       | VARCHAR(20)  |             |            |          |             |
+| rating      | tiny int     |             |           | 〇        |             |
+| image_url   | VARCHAR(20)  |             |            |          |             |
 | comment     | text         |             |            | 〇        |             |
 | created_at  | timestamp    |             |            |          |             |
 | updated_at  | timestamp    |             |            |          |             |
